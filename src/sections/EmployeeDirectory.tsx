@@ -1,17 +1,18 @@
-import { JSX, useEffect, useRef, useState } from "react"
+import { JSX } from "react"
 import { produce } from "immer";
 import { Box, Flex, Heading, Input, Select, Text, Divider, Spinner } from "@chakra-ui/react";
 
 import { Employee, Team, teams } from "../types";
 import { debounce } from "../utils";
 
-export const EmployeeDirectory = (): JSX.Element => {
+type EmployeeDirectoryProps = {
+  employees: Employee[];
+  fetchingEmployees: boolean;
+  allEmployeesRef: React.RefObject<Employee[]>;
+  setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>
+}
 
-  const allEmployeesRef = useRef<Employee[]>([]);
-
-  const [employees, setEmployees] = useState<Employee[]>([]);
-
-  const [fetchingEmployees, setFetchingEmployees] = useState(false);
+export const EmployeeDirectory = ({ employees, fetchingEmployees, allEmployeesRef, setEmployees }: EmployeeDirectoryProps): JSX.Element => {
 
   const handleUpdateSearchText = (val: string) => {
     if (val.length === 0) {
@@ -43,22 +44,6 @@ export const EmployeeDirectory = (): JSX.Element => {
     setEmployees(updatedEmployees);
   }
 
-
-  useEffect(() => {
-    setFetchingEmployees(true)
-    fetch('/api/employees')
-      .then((res) => res.json())
-      .then((res) => {
-        allEmployeesRef.current = res.employees;
-        setEmployees(res.employees);
-        console.table(res.employees)
-      }
-      ).catch(() => {
-        setEmployees([]);
-      }).finally(() => {
-        setFetchingEmployees(false)
-      });
-  }, [])
 
 
   return (
