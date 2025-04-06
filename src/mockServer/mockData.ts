@@ -11,7 +11,7 @@ export const mockdatas: Employee[] = [
     id: '3', name: 'Linda May', designation: 'Chief Business Officer', team: 'Business', managerId: '1', nextNodes: ['7','8','9']
   },
   {
-    id: '4', name: 'John Green', designation: 'Chief Accounting Officer', team: 'Accounts', managerId: '1', nextNodes: []
+    id: '4', name: 'John Green', designation: 'Chief Accounting Officer', team: 'Accounts', managerId: '1', nextNodes: ['10']
   },
   {
     id: '5', name: 'Ron Blomquist', designation: 'Chief Information Security Officer', team: 'Engineering', managerId: '2', nextNodes: []
@@ -27,5 +27,8 @@ export const mockdatas: Employee[] = [
   },
   {
     id: '9', name: "Kirik Douglas", designation: 'Chief Business Development Officer', team: 'Business', managerId: '3', nextNodes: []
+  },
+  {
+    id: '10', name: "Alice Lopez", designation: 'Accounts Intern', team: 'Accounts', managerId: '4', nextNodes: []
   },
 ];

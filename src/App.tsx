@@ -11,10 +11,35 @@ mockServer();
 
 export const App = () => {
 
+  // TODO: fix the duplication of employee values
   const allEmployeesRef = useRef<Employee[]>([]);
+  const allEmployeesIdMapRef = useRef<Map<string, Employee>>(new Map());
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [employeeTree, setEmployeeTree] = useState<EmployeeTree[]>([]);
   const [fetchingEmployees, setFetchingEmployees] = useState(false);
+
+
+  function findTopLevelEmployees(filteredEmployees: Employee[]): string[] {
+    const filteredIds = new Set(filteredEmployees.map(emp => emp.id));
+    return filteredEmployees
+      .filter(emp => !filteredIds.has(emp.managerId ?? ""))
+      .map(emp => emp.id);
+  }
+
+
+  const onFilterEmployees = (filtered?: Employee[]) => {
+    if (!filtered) {
+      setEmployees(allEmployeesRef.current);
+      const tree = buildTree([allEmployeesRef.current[0].id], allEmployeesIdMapRef.current);
+      setEmployeeTree(tree);
+    } else {
+      setEmployees(filtered);
+      const rootIds = findTopLevelEmployees(filtered);
+      const tree = buildTree(rootIds, allEmployeesIdMapRef.current);
+      setEmployeeTree(tree);
+    }
+
+  }
 
   useEffect(() => {
     setFetchingEmployees(true)
@@ -28,6 +53,7 @@ export const App = () => {
           acc.set(curr.id, curr);
           return acc;
         }, new Map<string, Employee>());
+        allEmployeesIdMapRef.current = employeeIdMap;
         console.table(employeeIdMap);
         const tree = buildTree([allEmployeesRef.current[0].id], employeeIdMap);
         setEmployeeTree(tree);
@@ -41,12 +67,20 @@ export const App = () => {
 
   return (
     <ChakraProvider theme={theme}>
-      <div className='appContainer'>
-        <EmployeeDirectory employees={employees} fetchingEmployees={fetchingEmployees} allEmployeesRef={allEmployeesRef} setEmployees={setEmployees} />
-        <div
-          className="tree-container"
-        >
-          <TreeChart employeeTree={employeeTree} />
+      <div className='app-container'>
+        <EmployeeDirectory employees={employees} fetchingEmployees={fetchingEmployees} allEmployeesRef={allEmployeesRef} onFilterEmployees={onFilterEmployees} />
+        <div className='tree-wrapper'>
+          {
+            employeeTree.map((tree) => {
+              return (
+                <div
+                  className="tree-container"
+                >
+                  <TreeChart employeeTree={[tree]} />
+                </div>
+              )
+            })
+          }
         </div>
       </div>
     </ChakraProvider>
