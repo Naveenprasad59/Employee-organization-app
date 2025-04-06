@@ -63,7 +63,7 @@ export const App = () => {
       }).finally(() => {
         setFetchingEmployees(false)
       });
-  }, [])
+  }, []);
 
   return (
     <ChakraProvider theme={theme}>
@@ -75,6 +75,7 @@ export const App = () => {
               return (
                 <div
                   className="tree-container"
+                  key={tree.data.id + "root"}
                 >
                   <TreeChart employeeTree={[tree]} />
                 </div>
