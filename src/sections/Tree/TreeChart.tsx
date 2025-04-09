@@ -10,7 +10,6 @@ export interface TreeNodeProps {
     children?: ReactNode;
 }
 
-
 function TreeNode({ children, nodeToRender }: TreeNodeProps) {
     return (
         <li className="tree-node-container tree-node-line">
@@ -21,9 +20,6 @@ function TreeNode({ children, nodeToRender }: TreeNodeProps) {
         </li>
     );
 }
-
-
-
 
 export const TreeChart = ({ employeeTree }: { employeeTree: EmployeeTree[] }) => {
     return (

@@ -1,24 +1,23 @@
 import { JSX, useState } from "react";
-import { Box, Flex, Heading, Input, Select, Text, Divider, Spinner, Button } from "@chakra-ui/react";
+import { produce } from "immer";
+import { Box, Flex, Heading, Input, Select, Text, Divider, Button } from "@chakra-ui/react";
 
 import { Employee, Team, teams } from "../types";
-import { produce } from "immer";
-// import { debounce } from "../utils";
 
 type EmployeeDirectoryProps = {
   employees: Employee[];
-  fetchingEmployees: boolean;
-  allEmployeesRef: React.RefObject<Employee[]>;
+  allEmployeesIdMapRef: React.RefObject<Map<string, Employee>>;
   onFilterEmployees: (filtered?: Employee[]) => void;
 }
 
-export const EmployeeDirectory = ({ employees, fetchingEmployees, allEmployeesRef, onFilterEmployees }: EmployeeDirectoryProps): JSX.Element => {
+export const EmployeeDirectory = ({ employees, allEmployeesIdMapRef, onFilterEmployees }: EmployeeDirectoryProps): JSX.Element => {
 
   const [searchText, setSearchText] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<Team | 'All Teams'>('All Teams');
 
   const applyFilters = () => {
-    const updatedEmployes = produce(allEmployeesRef.current, (employeesDraft) => {
+    const employees = Array.from(allEmployeesIdMapRef.current.values());
+    const updatedEmployes = produce(employees, (employeesDraft) => {
       const regex = new RegExp(searchText.trim(), "i");
       return employeesDraft.filter((emp) => {
         const matchesSearch =
@@ -42,11 +41,7 @@ export const EmployeeDirectory = ({ employees, fetchingEmployees, allEmployeesRe
     <Box as="aside" h="100%" w="100%" p="20px" borderRight="1px solid"
       borderColor="gray.200">
       {
-        fetchingEmployees ? (
-          <Flex h="100%" w="100%" alignItems="center" justifyContent="center">
-            <Spinner />
-          </Flex>
-        ) : <>
+        <>
           <Flex flexDir="column">
             <Flex gap="4px" pb={4} zIndex={1}>
               <Input
@@ -89,7 +84,6 @@ export const EmployeeDirectory = ({ employees, fetchingEmployees, allEmployeesRe
           </Flex>
         </>
       }
-
     </Box>
   )
 }
