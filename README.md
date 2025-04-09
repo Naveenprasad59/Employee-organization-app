@@ -4,6 +4,11 @@ This is a React + TypeScript application that displays an interactive **Employee
 
 ---
 
+## 🚀 Live Demo
+
+The demo application is live and accessible at:  
+🔗 [https://naveenprasad59.github.io/Employee-organization-app/](https://naveenprasad59.github.io/Employee-organization-app/)
+
 ## 🚀 Features
 
 - 👥 **Tree view of employee hierarchy**
