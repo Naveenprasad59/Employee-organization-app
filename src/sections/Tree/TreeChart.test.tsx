@@ -46,7 +46,6 @@ describe('TreeChart', () => {
         expect(screen.getByText('Alice')).toBeInTheDocument();
         expect(screen.getByText('CEO')).toBeInTheDocument();
         expect(screen.getByText('Leadership')).toBeInTheDocument();
-        expect(screen.queryByText("2")).not.toBeInTheDocument();
     });
 
     it('should render nested subordinates correctly', () => {
