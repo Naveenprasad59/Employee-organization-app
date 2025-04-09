@@ -1,4 +1,4 @@
-import { ChakraProvider, Flex, Spinner, theme } from '@chakra-ui/react';
+import { ChakraProvider, Flex, Spinner, theme, useToast } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { produce } from 'immer';
 
@@ -12,10 +12,6 @@ import { EmployeesTree } from './sections/Tree';
 
 mockServer();
 
-//Dragging a manager under their subordinate (circular dependency)
-// UT
-// Show message like “Updated manager” toast
-// README
 
 export const App = () => {
   const [fetchingEmployees, setFetchingEmployees] = useState(false);
@@ -24,6 +20,8 @@ export const App = () => {
   const allEmployeesIdMapRef = useRef<Map<string, Employee>>(new Map());
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [employeeTree, setEmployeeTree] = useState<EmployeeTree[]>([]);
+
+  const toast = useToast();
 
   const findTopLevelEmployees = (filteredEmployees: Employee[]): string[] => {
     const filteredIds = new Set(filteredEmployees.map(emp => emp.id));
@@ -107,11 +105,25 @@ export const App = () => {
       allEmployeesIdMapRef.current.set(newManagerId, { ...newManagerData, nextNodes: [...newManagerData.nextNodes, employeeIdToReassign] })
     }
 
-    await fetch(`/api/employees/${employeeIdToReassign}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ managerId: newManagerId }),
-    });
+    try {
+      await fetch(`/api/employees/${employeeIdToReassign}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ managerId: newManagerId }),
+      });
+
+      toast({
+        title: 'Manager updated',
+        description: `${employeeDataToReassign?.name} is now reporting to ${newManagerData?.name}`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    } catch (err) {
+      console.error(err)
+    }
+
   }
 
   useEffect(() => {
