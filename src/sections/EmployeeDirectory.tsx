@@ -39,7 +39,7 @@ export const EmployeeDirectory = ({ employees, allEmployeesIdMapRef, onFilterEmp
 
   return (
     <Box as="aside" h="100%" w="100%" p="20px" borderRight="1px solid"
-      borderColor="gray.200">
+      borderColor="gray.200" overflow="auto">
       {
         <>
           <Flex flexDir="column">
