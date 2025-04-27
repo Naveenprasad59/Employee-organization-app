@@ -16,7 +16,7 @@ mockServer();
 export const App = () => {
   const [fetchingEmployees, setFetchingEmployees] = useState(false);
 
-  const allEmployeesRef = useRef<string[]>([]);
+  const mainManagerIdRef = useRef<string>('');
   const allEmployeesIdMapRef = useRef<Map<string, Employee>>(new Map());
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [employeeTree, setEmployeeTree] = useState<EmployeeTree[]>([]);
@@ -33,7 +33,7 @@ export const App = () => {
   const onFilterEmployees = (filtered?: Employee[]) => {
     if (!filtered) {
       setEmployees(Array.from(allEmployeesIdMapRef.current.values()));
-      const tree = buildTree([allEmployeesRef.current[0]], allEmployeesIdMapRef.current);
+      const tree = buildTree([mainManagerIdRef.current], allEmployeesIdMapRef.current);
       setEmployeeTree(tree);
     } else {
       setEmployees(filtered);
@@ -131,14 +131,14 @@ export const App = () => {
     fetch('/api/employees')
       .then((res) => res.json())
       .then((res: { employees: Employee[] }) => {
-        allEmployeesRef.current = res.employees.map((emp) => emp.id);
+        mainManagerIdRef.current = res.employees[0].id;
         setEmployees(res.employees);
         const employeeIdMap = res.employees.reduce((acc, curr) => {
           acc.set(curr.id, curr);
           return acc;
         }, new Map<string, Employee>());
         allEmployeesIdMapRef.current = employeeIdMap;
-        const tree = buildTree([allEmployeesRef.current[0]], employeeIdMap);
+        const tree = buildTree([mainManagerIdRef.current], employeeIdMap);
         setEmployeeTree(tree);
       }
       ).catch(() => {
