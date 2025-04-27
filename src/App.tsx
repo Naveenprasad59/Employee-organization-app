@@ -56,39 +56,37 @@ export const App = () => {
       let draggedNode: EmployeeTree | undefined = undefined;
 
       // Filter dragged node from tree and keep an reference
-      const removeNode = (nodes: EmployeeTree[]): EmployeeTree[] => {
-        return nodes.filter(node => {
-          if (node.data.id === employeeIdToReassign) {
-            draggedNode = node;
-            // Update managerId so new link is formed
-            draggedNode.data.managerId = newManagerId;
-            return false;
-          }
+      const removeNode = (nodes: EmployeeTree[]) => {
+        for (const node of nodes) {
           if (node.data.id === olaManagerData?.id) {
             node.data.nextNodes = node.data.nextNodes.filter((node) => node !== employeeIdToReassign);
-          }
-          node.subordinates = removeNode(node.subordinates);
-          return true;
-        });
-      };
-
-      const cleanedTree = removeNode(draft);
-
-      const insertNode = (nodes: EmployeeTree[]) => {
-        for (const node of nodes) {
-          if (node.data.id === newManagerId) {
-            node.subordinates.push(draggedNode!);
-            node.data.nextNodes.push(employeeIdToReassign);
+            const subordinateIndexToRemove = node.subordinates.findIndex((sData) => sData.data.id === employeeIdToReassign);
+            if (subordinateIndexToRemove > -1) {
+              draggedNode = node.subordinates[subordinateIndexToRemove];
+              node.subordinates.splice(subordinateIndexToRemove, 1);
+            }
             return;
           }
-          insertNode(node.subordinates);
+          removeNode(node.subordinates);
         }
       };
 
-      insertNode(cleanedTree);
+      removeNode(draft);
 
-      draft.length = 0;
-      draft.push(...cleanedTree)
+      if (draggedNode) {
+        const insertNode = (nodes: EmployeeTree[]) => {
+          for (const node of nodes) {
+            if (node.data.id === newManagerId) {
+              node.subordinates.push(draggedNode!);
+              node.data.nextNodes.push(employeeIdToReassign);
+              return;
+            }
+            insertNode(node.subordinates);
+          }
+        };
+
+        insertNode(draft);
+      }
     });
 
     setEmployeeTree(updatedEmployeeTree);
